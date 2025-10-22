@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Минисофт — студия телеграм-решений</title>
+    <meta
+      name="description"
+      content="Минисофт — студия телеграм-решений. Телеграм-боты и мини-приложения под ключ: продажи, CRM/ERP/BPM, витрины, интеграции и поддержка."
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="bg-gradient-to-b from-white via-sky-50 to-white text-slate-900">
+    <!-- ===== Header ===== -->
+    <header class="sticky top-0 z-40 backdrop-blur bg-white/70 border-b border-sky-100">
+      <div class="max-w-7xl mx-auto h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+        <a href="#home" class="flex items-center gap-3">
+          <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-sky-500 text-white font-bold shadow-sm">m</span>
+          <span>
+            <span class="block font-semibold tracking-tight leading-none">Минисофт</span>
+            <span class="block text-[12px] text-slate-500 leading-none mt-0.5">Студия телеграм-решений</span>
+          </span>
+        </a>
+
+        <nav id="menu" class="hidden md:flex items-center gap-8 text-sm font-medium">
+          <a href="#services" class="hover:text-sky-700">Услуги</a>
+          <a href="#stages" class="hover:text-sky-700">Этапы</a>
+          <a href="#pricing" class="hover:text-sky-700">Стоимость</a>
+          <a href="#contact" class="hover:text-sky-700">Контакты</a>
+        </nav>
+
+        <div class="hidden lg:flex items-center gap-4">
+          <a href="tel:+79819584828" class="text-sm text-slate-700 hover:text-sky-700">8 981 958 48 28</a>
+          <a href="#contact" class="inline-flex items-center gap-2 rounded-xl bg-sky-600 text-white px-3 py-2 text-sm shadow-sm hover:bg-sky-700 duration-150">Обсудить проект</a>
+        </div>
+
+        <div class="flex lg:hidden items-center gap-3">
+          <a href="tel:+79819584828" class="hidden sm:inline text-sm text-slate-700 hover:text-sky-700">8 981 958 48 28</a>
+          <button id="burger" class="md:hidden text-2xl" aria-label="Открыть меню">☰</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===== Hero ===== -->
+    <section id="home" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
+      <div class="grid lg:grid-cols-2 gap-10 items-center">
+        <div>
+          <span class="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs text-sky-700">Разработка под ваш бизнес</span>
+          <h1 class="mt-4 text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+            Телеграм-боты и мини-приложения под ключ
+          </h1>
+          <p class="mt-6 text-lg text-slate-600 max-w-2xl">
+            «Минисофт» — студия, которая создаёт чат-ботов и мини-приложения в Telegram: от продаж товаров и услуг до внутренних CRM/ERP/BPM-систем. Делаем решения, которые приносят реальную пользу бизнесу.
+          </p>
+          <div class="mt-8 flex flex-col sm:flex-row gap-3">
+            <a href="#pricing" class="inline-flex items-center justify-center rounded-xl bg-sky-600 text-white px-5 py-3 shadow-sm hover:bg-sky-700">Узнать стоимость</a>
+            <a href="#services" class="inline-flex items-center justify-center rounded-xl border border-sky-200 px-5 py-3 hover:shadow">Наши услуги</a>
+          </div>
+
+          <ul class="mt-8 grid grid-cols-2 gap-4 max-w-md">
+            <li class="card flex items-center gap-3">
+              <span class="text-2xl">🛡️</span>
+              <span class="text-sm">Гарантия и поддержка</span>
+            </li>
+            <li class="card flex items-center gap-3">
+              <span class="text-2xl">⚡</span>
+              <span class="text-sm">Быстрая интеграция</span>
+            </li>
+          </ul>
+        </div>
+        <div class="relative">
+          <div class="absolute -inset-6 bg-sky-100/60 blur-3xl rounded-full"></div>
+          <div class="relative rounded-2xl border border-sky-100 bg-white shadow-xl p-6">
+            <div class="grid grid-cols-2 gap-4 text-center">
+              <div><div class="text-2xl font-bold">50+</div><p class="text-sm text-slate-500">реализованных проектов</p></div>
+              <div><div class="text-2xl font-bold">2–8 нед</div><p class="text-sm text-slate-500">срок MVP</p></div>
+              <div><div class="text-2xl font-bold">99.9%</div><p class="text-sm text-slate-500">аптайм</p></div>
+              <div><div class="text-2xl font-bold">24/7</div><p class="text-sm text-slate-500">мониторинг</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Services ===== -->
+    <section id="services" class="py-16 sm:py-24 bg-gradient-to-b from-white to-sky-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl sm:text-4xl font-bold">Услуги</h2>
+
+        <div class="mt-10 grid md:grid-cols-3 gap-6">
+          <!-- Разработка чат-ботов -->
+          <article class="card">
+            <h3 class="text-xl font-semibold">Разработка чат-ботов</h3>
+            <p class="mt-2 text-slate-600 text-sm">
+              Боты для продаж, поддержки, HR, записей и уведомлений. Проектируем сценарии, подключаем платежи и админ-панель.
+            </p>
+          </article>
+
+          <!-- CRM/ERP/BPM -->
+          <article class="card">
+            <h3 class="text-xl font-semibold">CRM/ERP/BPM в Telegram</h3>
+            <p class="mt-2 text-slate-600 text-sm">
+              Внутренние системы в привычном интерфейсе мессенджера: воронки, заявки, роли, права доступа, отчёты, интеграции с 1С/Битрикс и т.д.
+            </p>
+          </article>
+
+          <!-- Витрины -->
+          <article class="card">
+            <h3 class="text-xl font-semibold">Витрины товаров и услуг</h3>
+            <p class="mt-2 text-slate-600 text-sm">
+              Каталог, корзина и оплаты внутри Telegram. Уведомления, статусы заказов, интеграции со складом/доставкой.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Stages ===== -->
+    <section id="stages" class="py-16 sm:py-24">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl sm:text-4xl font-bold">Этапы работы</h2>
+
+        <ol class="mt-8 grid lg:grid-cols-3 gap-6">
+          <li class="card">
+            <h3 class="font-semibold">Анализ</h3>
+            <p class="mt-1 text-sm text-slate-600">Интервью, цели, аудит текущих процессов.</p>
+          </li>
+          <li class="card">
+            <h3 class="font-semibold">Проектирование</h3>
+            <p class="mt-1 text-sm text-slate-600">Сценарии, прототипы, архитектура и ТЗ.</p>
+          </li>
+          <li class="card">
+            <h3 class="font-semibold">Реализация</h3>
+            <p class="mt-1 text-sm text-slate-600">Разработка бота/мини-приложения и интеграций.</p>
+          </li>
+          <li class="card">
+            <h3 class="font-semibold">Настройка</h3>
+            <p class="mt-1 text-sm text-slate-600">Развёртывание, доступы, роли, мониторинг.</p>
+          </li>
+          <li class="card">
+            <h3 class="font-semibold">Тестирование</h3>
+            <p class="mt-1 text-sm text-slate-600">Приемочные сценарии и нагрузочные проверки.</p>
+          </li>
+          <li class="card">
+            <h3 class="font-semibold">Обучение и поддержка</h3>
+            <p class="mt-1 text-sm text-slate-600">Обучаем команду и сопровождаем релиз.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===== Pricing ===== -->
+    <section id="pricing" class="py-16 sm:py-24 bg-gradient-to-b from-white to-sky-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl sm:text-4xl font-bold">Стоимость</h2>
+        <p class="mt-3 text-slate-600">Итоговая цена зависит от сложности проекта и набора интеграций</p>
+        text-sm text-slate-600">Имя</label>
+            <input id="f-name" class="input mt-1" placeholder="Как к вам обращаться" required />
+          </div>
+          <div>
+            <label class="text-sm text-slate-600">Email</label>
+            <input id="f-email" type="email" class="input mt-1" placeholder="name@company.com" required />
+          </div>
+          <div>
+            <label class="text-sm text-slate-600">Телеграм @username</label>
+            <input id="f-tg" class="input mt-1" placeholder="@username" />
+          </div>
+          <div>
+            <label class="text-sm text-slate-600">Кратко опишите проект</label>
+            <textarea id="f-msg" rows="5" class="input mt-1" placeholder="Какая цель, интеграции, сроки?" required></textarea>
+          </div>
+
+          <button type="submit" class="rounded-xl bg-sky-600 text-white px-4 py-2 hover:bg-sky-700">Отправить заявку</button>
+          <!-- Сообщения -->
+          <p id="form-msg" class="text-xs text-slate-500"></p>
+          <div class="text-[12px] text-slate-500 space-y-1">
+            <p>«Нажимая кнопку, вы соглашаетесь с обработкой персональных данных.»</p>
+            <p>«Если отправка через сервер временно недоступна, будет открыт ваш почтовый клиент с готовым письмом.»</p>
+          </div>
+
+          <!-- Подсказки для скрипта (можно удалить, если не нужны) -->
+          <div id="form-texts" class="hidden"
+               data-error="Заполните имя, email и описание проекта."
+               data-success="Спасибо! Заявка отправлена на почту info.softmini@gmail.com. Мы свяжемся с вами в ближайшее время.">
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ===== Requisites ===== -->
+    <section id="legal" class="py-16 sm:py-24 bg-gradient-to-b from-white to-sky-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl sm:text-4xl font-bold">Реквизиты</h2>
+        <div class="mt-8 grid lg:grid-cols-2 gap-6">
+          <div class="card text-sm leading-6">
+            <p><strong>Название организации:</strong><br/>ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ &quot;МИНИСОФТ&quot;</p>
+            <p class="mt-3"><strong>Юридический адрес:</strong><br/>197349, РОССИЯ, Г.САНКТ-ПЕТЕРБУРГ, ВН.ТЕР.Г. МУНИЦИПАЛЬНЫЙ ОКРУГ ЮНТОЛОВО, УЛ ПАРАШЮТНАЯ, Д. 23, К. 2, ЛИТЕРА А, КВ. 52</p>
+            <p class="mt-3">ИНН: 7814856690<br/>КПП: 781401001<br/>ОГРН: 1257800093187</p>
+          </div>
+
+          <div class="card text-sm leading-6">
+            <p><strong>Расчётный счёт:</strong> 40702810010001989394</p>
+            <p>Банк: АО «ТБанк»</p>
+            <p>ИНН банка: 7710140679</p>
+            <p>БИК: 044525974</p>
+            <p>Корреспондентский счёт: 30101810145250000974</p>
+            <p class="mt-3"><strong>Юридический адрес банка:</strong><br/>127287, г. Москва, ул. Хуторская 2-я, д. 38А, стр. 26</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Footer ===== -->
+    <footer class="border-t border-sky-100 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid md:grid-cols-3 gap-8">
+        <div class="md:col-span-2 text-sm text-slate-600 space-y-3">
+          <p>© <span id="year"></span> Минисофт. Все права защищены.</p>
+          <p>
+            Информация, размещённая на сайте <a href="https://theapplication.site" target="_blank" class="underline decoration-sky-300 underline-offset-4">https://theapplication.site</a>
+            не является публичной офертой (ст. 437 ГК РФ). Актуальные цены и условия уточняйте по телефону.
+          </p>
+          <p>Продолжая использовать сайт, вы соглашаетесь на использование cookies.</p>
+        </div>
+
+        <div>
+          <h4 class="font-semibold">Навигация</h4>
+          <ul class="mt-3 space-y-2 text-sm">
+            <li><a href="#services" class="hover:text-sky-700">Услуги</a></li>
+            <li><a href="#stages" class="hover:text-sky-700">Этапы</a></li>
+            <li><a href="#pricing" class="hover:text-sky-700">Стоимость</a></li>
+            <li><a href="#contact" class="hover:text-sky-700">Контакты</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+  </body>
+</html>
