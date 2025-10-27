@@ -1,139 +1,84 @@
-// ===== ССЫЛКИ НА ЭЛЕМЕНТЫ
-const header = document.querySelector("header");
-const burger = document.getElementById("burger");
-const menu = document.getElementById("menu");
-const yearEl = document.getElementById("year");
-
-// Контактная форма / попап
+// ===== ЭЛЕМЕНТЫ
 const form = document.getElementById("contact-form");
 const status = document.getElementById("form-status");
 const popup = document.getElementById("success-popup");
 const closePopup = document.getElementById("close-popup");
+const btn = document.getElementById("form-submit");
 
-// ===== ДИНАМИЧЕСКИЙ ГОД
-if (yearEl) yearEl.textContent = new Date().getFullYear();
-
-// ===== ТЕНЬ У ШАПКИ
-const onScrollHeaderShadow = () => {
-  if (window.scrollY > 4) header?.classList.add("header--shadow");
-  else header?.classList.remove("header--shadow");
-};
-onScrollHeaderShadow();
-window.addEventListener("scroll", onScrollHeaderShadow, { passive: true });
-
-// ===== БУРГЕР-МЕНЮ
-const toggleMenu = () => {
-  menu?.classList.toggle("hidden");
-  document.body.classList.toggle("no-scroll");
-  if (burger) burger.textContent = menu?.classList.contains("hidden") ? "☰" : "✕";
-};
-burger?.addEventListener("click", toggleMenu);
-
-// Закрытие меню по клику на пункт
-menu?.querySelectorAll('a[href^="#"]').forEach((a) => {
-  a.addEventListener("click", () => {
-    if (window.innerWidth < 768 && !menu.classList.contains("hidden")) toggleMenu();
-  });
-});
-
-// ===== ПЛАВНЫЙ СКРОЛЛ С КОМПЕНСАЦИЕЙ ХЕДЕРА
-const HEADER_OFFSET = 72;
-document.querySelectorAll('a[href^="#"]').forEach((a) => {
-  a.addEventListener("click", (e) => {
-    const id = a.getAttribute("href");
-    if (!id || id === "#" || id.length < 2) return;
-    const target = document.querySelector(id);
-    if (!target) return;
-    e.preventDefault();
-    const rect = target.getBoundingClientRect();
-    const top = window.scrollY + rect.top - HEADER_OFFSET;
-    window.scrollTo({ top, behavior: "smooth" });
-    history.pushState(null, "", id);
-  });
-});
-
-// ===== REVEAL-Анимации (включая модификатор .from-left)
-const observer = new IntersectionObserver(
-  (entries) =>
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("is-visible");
-        observer.unobserve(entry.target);
-      }
-    }),
-  { threshold: 0.15 }
-);
-
-// Навесим .reveal, если не задан, и начнём наблюдение
-document
-  .querySelectorAll("section, .card, article, figure, .rounded-2xl, .reveal")
-  .forEach((el) => {
-    if (!el.classList.contains("reveal")) el.classList.add("reveal");
-    observer.observe(el);
-  });
-
-// ===== Помощники для статуса формы
+// ===== ХЕЛПЕР СТАТУСА
 function setStatus(text, type = "info") {
   if (!status) return;
   status.textContent = text || "";
-  status.className = "text-sm text-center h-5 msg";
-  if (type === "ok") status.classList.add("msg--ok");
-  if (type === "error") status.classList.add("msg--error");
-}
-
-// Статус + helper
-const status = document.getElementById("form-status");
-function setStatus(msg, type) {
-  status.textContent = msg || "";
   const base = "text-sm text-center msg h-5";
-  if (type === "error") status.className = base + " msg--error";
-  else if (type === "ok") status.className = base + " msg--ok";
-  else status.className = base;
+  status.className = base + (type === "error" ? " msg--error" : type === "ok" ? " msg--ok" : "");
 }
 
+// ===== ВАЛИДАЦИЯ
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const TG_RE = /^@?[a-zA-Z][a-zA-Z0-9_]{4,31}$/; // 5–32 символов
+
+// ===== ОТПРАВКА ФОРМЫ (Formspree)
 form?.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const name = document.getElementById("f-name")?.value?.trim();
   const email = document.getElementById("f-email")?.value?.trim();
-  const tg = document.getElementById("f-tg")?.value?.trim();
+  const telegram = document.getElementById("f-tg")?.value?.trim();
   const message = document.getElementById("f-msg")?.value?.trim();
 
-  // Валидаторы
-  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  // @ — опционально; первая буква латинская; длина 5–32; далее латиница/цифры/_
-  const TG_RE = /^@?[a-zA-Z][a-zA-Z0-9_]{4,31}$/;
-
-  // Обязательные поля
-  if (!name) {
-    setStatus("Укажите имя.", "error");
-    return;
-  }
-  if (!email || !EMAIL_RE.test(email)) {
-    setStatus("Указан неверный формат email.", "error");
-    return;
-  }
-  if (!message) {
-    setStatus("Опишите проект в поле сообщения.", "error");
-    return;
-  }
-  // Телеграм @username — опционально; если введён, проверяем формат
-  if (tg && !TG_RE.test(tg)) {
-    setStatus("Неверный формат Telegram @username (5–32 символа, латиница/цифры/_, @ опционально).", "error");
-    return;
+  if (!name) return setStatus("Укажите имя.", "error");
+  if (!email || !EMAIL_RE.test(email)) return setStatus("Указан неверный формат email.", "error");
+  if (!message) return setStatus("Опишите проект в поле сообщения.", "error");
+  if (telegram && !TG_RE.test(telegram)) {
+    return setStatus("Неверный формат Telegram @username (5–32 символов, латиница/цифры/_, @ опционально).", "error");
   }
 
-  // Имитация отправки
+  btn?.setAttribute("disabled", "true");
+  btn?.classList.add("opacity-60", "cursor-not-allowed");
   setStatus("Отправляем заявку…");
-  await new Promise((r) => setTimeout(r, 800));
 
-  setStatus("✅ Заявка отправлена.", "ok");
-  popup?.classList.remove("hidden");
-  form.reset();
+  try {
+    // Берём endpoint из атрибута action формы
+    const endpoint = form.getAttribute("action"); // https://formspree.io/f/mwpwvnrq
+
+    const payload = {
+      name,
+      email,
+      telegram,
+      message,
+      _subject: "Новая заявка с сайта Минисофт",
+      _language: "ru"
+    };
+
+    const resp = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (resp.ok) {
+      setStatus("✅ Заявка отправлена.", "ok");
+      popup?.classList.remove("hidden");
+      form.reset();
+    } else {
+      const err = await resp.json().catch(() => ({}));
+      const msg = err?.errors?.[0]?.message || "Ошибка отправки. Попробуйте ещё раз.";
+      setStatus(msg, "error");
+    }
+  } catch {
+    setStatus("Сеть недоступна. Проверьте соединение и попробуйте ещё раз.", "error");
+  } finally {
+    btn?.removeAttribute("disabled");
+    btn?.classList.remove("opacity-60", "cursor-not-allowed");
+  }
 });
 
-// Закрытие попапа
-closePopup?.addEventListener("click", () => popup?.classList.add("hidden"));
+// ===== ЗАКРЫТИЕ ПОПАПА
+const hideSuccessPopup = () => popup?.classList.add("hidden");
+closePopup?.addEventListener("click", hideSuccessPopup);
 popup?.addEventListener("click", (e) => {
-  if (e.target === popup) popup?.classList.add("hidden");
+  if (e.target === popup) hideSuccessPopup();
 });
