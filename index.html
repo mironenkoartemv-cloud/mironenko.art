@@ -1,577 +1,533 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Минисофт — студия телеграм-решений</title>
-    <meta
-      name="description"
-      content="Минисофт — студия телеграм-решений. Телеграм-боты и мини-приложения под ключ: магазины, интеграции, внутренние инструменты и поддержка."
-    />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Минисофт — студия Telegram‑решений</title>
+  <meta name="description" content="Минисофт — студия Telegram‑решений. Создаём чат‑ботов и мини‑приложения под ключ: магазины, интеграции, внутренние инструменты. Аналитика, дизайн, разработка, запуск и поддержка." />
 
-    <!-- ===== Favicon and App Icons ===== -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <meta name="theme-color" content="#0ea5e9">
+  <!-- ===== Favicon and App Icons ===== -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#0ea5e9">
 
-    <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- ===== Встроенные стили (заменяют style.css) ===== -->
-    <style>
-      :root{
-        --sky-50:#f0f9ff;
-        --sky-100:#e0f2fe;
-        --sky-200:#bae6fd;
-        --sky-300:#7dd3fc;
-        --sky-500:#0ea5e9;
-        --sky-600:#0284c7;
-        --slate-500:#64748b;
-        --slate-600:#475569;
-        --radius:16px;
-      }
-      * { box-sizing: border-box; }
-      html { scroll-behavior: smooth; }
-      body.no-scroll { overflow: hidden; }
+  <!-- ===== Встроенные стили (заменяют style.css) ===== -->
+  <style>
+    :root{
+      --sky-50:#f0f9ff;
+      --sky-100:#e0f2fe;
+      --sky-200:#bae6fd;
+      --sky-300:#7dd3fc;
+      --sky-500:#0ea5e9;
+      --sky-600:#0284c7;
+      --slate-500:#64748b;
+      --slate-600:#475569;
+      --radius:16px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body.no-scroll { overflow: hidden; }
 
-      .card{
-        border:1px solid var(--sky-100);
-        background:#fff;
-        border-radius: var(--radius);
-        padding: 24px;
-        box-shadow: 0 1px 2px rgba(2, 132, 199, 0.04);
-        transition: box-shadow .2s ease, transform .2s ease;
-      }
-      .card:hover{
-        box-shadow: 0 8px 26px rgba(2, 132, 199, 0.12);
-        transform: translateY(-2px);
-      }
+    .card{
+      border:1px solid var(--sky-100);
+      background:#fff;
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: 0 1px 2px rgba(2, 132, 199, 0.04);
+      transition: box-shadow .2s ease, transform .2s ease;
+    }
+    .card:hover{
+      box-shadow: 0 8px 26px rgba(2, 132, 199, 0.12);
+      transform: translateY(-2px);
+    }
+    .input{
+      width: 100%;
+      border:1px solid var(--sky-200);
+      background:#fff;
+      border-radius: 12px;
+      padding: 10px 12px;
+      outline: none;
+      transition: box-shadow .15s ease, border-color .15s ease;
+    }
+    .input:focus{
+      border-color: var(--sky-300);
+      box-shadow: 0 0 0 4px rgba(125, 211, 252, .35);
+    }
+    .msg{ font-size: 12px; line-height: 1.4; }
+    .msg--error{ color:#b91c1c; }
+    .msg--ok{ color:#0369a1; }
+    .header--shadow{ box-shadow: 0 8px 26px rgba(2, 132, 199, 0.10); }
 
-      .input{
-        width: 100%;
-        border:1px solid var(--sky-200);
-        background:#fff;
-        border-radius: 12px;
-        padding: 10px 12px;
-        outline: none;
-        transition: box-shadow .15s ease, border-color .15s ease;
-      }
-      .input:focus{
-        border-color: var(--sky-300);
-        box-shadow: 0 0 0 4px rgba(125, 211, 252, .35);
-      }
+    /* REVEAL-анимация */
+    .reveal{ opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.is-visible{ opacity: 1; transform: translateY(0); }
+    /* Модификатор «вплывание слева» */
+    .reveal.from-left { transform: translateX(-24px); }
+    .reveal.from-left.is-visible { transform: translateX(0); }
 
-      .msg{ font-size: 12px; line-height: 1.4; }
-      .msg--error{ color:#b91c1c; }
-      .msg--ok{ color:#0369a1; }
+    @media (prefers-reduced-motion: reduce){
+      .reveal{ opacity:1; transform:none; transition:none; }
+      .reveal.from-left{ transform:none; }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-white via-sky-50 to-white text-slate-900">
+  <!-- ===== Header ===== -->
+  <header class="sticky top-0 z-40 backdrop-blur bg-white/70 border-b border-sky-100">
+    <div class="max-w-7xl mx-auto h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+      <a href="#home" class="flex items-center gap-3 reveal from-left">
+        <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-sky-500 text-white font-bold shadow-sm">m</span>
+        <span>
+          <span class="block font-semibold tracking-tight leading-none">Минисофт</span>
+          <span class="block text-[12px] text-slate-500 leading-none mt-0.5">Студия Telegram‑решений</span>
+        </span>
+      </a>
 
-      .header--shadow{
-        box-shadow: 0 8px 26px rgba(2, 132, 199, 0.10);
-      }
+      <nav id="menu" class="hidden md:flex items-center gap-8 text-sm font-medium">
+        <a href="#services" class="hover:text-sky-700">Услуги</a>
+        <a href="#products" class="hover:text-sky-700">Продукты</a>
+        <a href="#clients" class="hover:text-sky-700">Клиенты</a>
+        <a href="#stages" class="hover:text-sky-700">Этапы</a>
+        <a href="#pricing" class="hover:text-sky-700">Стоимость</a>
+        <a href="#contact" class="hover:text-sky-700">Контакты</a>
+      </nav>
 
-      /* REVEAL-анимация */
-      .reveal{
-        opacity: 0;
-        transform: translateY(20px);
-        transition: opacity .6s ease, transform .6s ease;
-      }
-      .reveal.is-visible{
-        opacity: 1;
-        transform: translateY(0);
-      }
-      /* Модификатор «вплывание слева» */
-      .reveal.from-left { transform: translateX(-24px); }
-      .reveal.from-left.is-visible { transform: translateX(0); }
-
-      @media (prefers-reduced-motion: reduce){
-        .reveal{ opacity:1; transform:none; transition:none; }
-        .reveal.from-left{ transform:none; }
-      }
-    </style>
-  </head>
-
-  <body class="bg-gradient-to-b from-white via-sky-50 to-white text-slate-900">
-    <!-- ===== Header ===== -->
-    <header class="sticky top-0 z-40 backdrop-blur bg-white/70 border-b border-sky-100">
-      <div class="max-w-7xl mx-auto h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8">
-        <a href="#home" class="flex items-center gap-3 reveal from-left">
-          <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-sky-500 text-white font-bold shadow-sm">m</span>
-          <span>
-            <span class="block font-semibold tracking-tight leading-none">Минисофт</span>
-            <span class="block text-[12px] text-slate-500 leading-none mt-0.5">Студия телеграм-решений</span>
-          </span>
-        </a>
-
-        <nav id="menu" class="hidden md:flex items-center gap-8 text-sm font-medium">
-          <a href="#services" class="hover:text-sky-700">Услуги</a>
-          <a href="#products" class="hover:text-sky-700">Продукты</a>
-          <a href="#clients" class="hover:text-sky-700">Клиенты</a>
-          <a href="#stages" class="hover:text-sky-700">Этапы</a>
-          <a href="#pricing" class="hover:text-sky-700">Стоимость</a>
-          <a href="#contact" class="hover:text-sky-700">Контакты</a>
-        </nav>
-
-        <div class="hidden lg:flex items-center gap-4">
-          <a href="tel:+79819584828" class="text-sm text-slate-700 hover:text-sky-700">8 981 958 48 28</a>
-          <a href="#contact" class="inline-flex items中心 gap-2 rounded-xl bg-sky-600 text-white px-3 py-2 text-sm shadow-sm hover:bg-sky-700 duration-150">Обсудить проект</a>
-        </div>
-
-        <div class="flex lg:hidden items-center gap-3">
-          <a href="tel:+79819584828" class="hidden sm:inline text-sm text-slate-700 hover:text-sky-700">8 981 958 48 28</a>
-          <button id="burger" class="md:hidden text-2xl" aria-label="Открыть меню">☰</button>
-        </div>
+      <div class="hidden lg:flex items-center gap-4">
+        <a href="tel:+79819584828" class="text-sm text-slate-700 hover:text-sky-700">8 981 958 48 28</a>
+        <a href="#contact" class="inline-flex items-center gap-2 rounded-xl bg-sky-600 text-white px-3 py-2 text-sm shadow-sm hover:bg-sky-700 duration-150">Обсудить проект</a>
       </div>
-    </header>
 
-    <!-- ===== Hero ===== -->
-    <section id="home" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
-      <div class="grid lg:grid-cols-2 gap-10 items-center">
-        <div class="reveal from-left">
-          <span class="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs text-sky-700">Разработка под ваш бизнес</span>
-          <h1 class="mt-4 text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight">
-            Телеграм-боты и мини-приложения под ключ
-          </h1>
-          <p class="mt-6 text-lg text-slate-600 max-w-2xl">
-            «Минисофт» — студия, создающая чат-ботов, мини-приложения и инструменты для бизнеса прямо внутри Telegram. Автоматизируем продажи, коммуникации и управление задачами и многое другое .
-          </p>
-          <div class="mt-8 flex flex-col sm:flex-row gap-3">
-            <a href="#pricing" class="inline-flex items-center justify-center rounded-xl bg-sky-600 text-white px-5 py-3 shadow-sm hover:bg-sky-700">Узнать стоимость</a>
-            <a href="#services" class="inline-flex items-center justify-center rounded-xl border border-sky-200 px-5 py-3 hover:shadow">Наши услуги</a>
-          </div>
-
-          <ul class="mt-8 grid grid-cols-2 gap-4 max-w-md">
-            <li class="card flex items-center gap-3 reveal from-left">
-              <span class="text-2xl">🛡️</span>
-              <span class="text-sm">Гарантия и поддержка</span>
-            </li>
-            <li class="card flex items-center gap-3 reveal from-left">
-              <span class="text-2xl">⚡</span>
-              <span class="text-sm">Быстрая интеграция</span>
-            </li>
-          </ul>
-        </div>
-        <div class="relative">
-          <div class="absolute -inset-6 bg-sky-100/60 blur-3xl rounded-full"></div>
-          <div class="relative rounded-2xl border border-sky-100 bg-white shadow-xl p-6">
-            <div class="grid grid-cols-2 gap-4 text-center">
-              <div><div class="text-2xl font-bold">50+</div><p class="text-sm text-slate-500">реализованных проектов</p></div>
-              <div><div class="text-2xl font-bold">2–8 нед</div><p class="text-sm text-slate-500">срок MVP</p></div>
-              <div><div class="text-2xl font-bold">99.9%</div><p class="text-sm text-slate-500">аптайм</p></div>
-              <div><div class="text-2xl font-bold">24/7</div><p class="text-sm text-slate-500">мониторинг</p></div>
-            </div>
-          </div>
-        </div>
+      <div class="flex lg:hidden items-center gap-3">
+        <a href="tel:+79819584828" class="hidden sm:inline text-sm text-slate-700 hover:text-sky-700">8 981 958 48 28</a>
+        <button id="burger" class="md:hidden text-2xl" aria-label="Открыть меню">☰</button>
       </div>
-    </section>
+    </div>
+  </header>
 
-    <!-- ===== Services ===== -->
-    <section id="services" class="py-16 sm:py-24 bg-gradient-to-b from-white to-sky-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3л sm:text-4xl font-bold reveal from-left">Услуги</h2>
-
-        <div class="mt-10 grid md:grid-cols-3 gap-6">
-          <article class="card reveal from-left">
-            <h3 class="text-xl font-semibold">Разработка чат-ботов</h3>
-            <p class="mt-2 text-slate-600 text-sm">
-              Создаем чат-ботов для продаж, поддержки пользователей и HR коммуникаций. Спроектируем сценарии и фнкционал под ваш запрос и потребности. 
-            </p>
-          </article>
-
-          <article class="card reveal from-left">
-            <h3 class="text-xl font-semibold">Мини-приложения в Telegram</h3>
-            <p class="mt-2 text-slate-600 text-sm">
-              Разработаем полноценное мобильные приложения внутри мессенджера, не требующее установок и скачиваний.
-            </p>
-          </article>
-
-          <article class="card reveal from-left">
-            <h3 class="text-xl font-semibold">Интеграции со сторонним ПО</h3>
-            <p class="mt-2 text-slate-600 text-sm">
-             Настроим обменн данными со сторонним ПО, чтобы они были всегда под рукой, прямо в вашем Telegram.
-            </p>
-          </article>
-
-          <article class="card reveal from-left">
-            <h3 class="text-xl font-semibold">Магазины в Telegram</h3>
-            <p class="mt-2 text-slate-600 text-sm">
-              Создадим дополнительный канал продаж для вашего бизнеса. Полноценный интернет-магазин, прямо в мэссеннджере. Подключим каталог, корзину, оформление и оплату заказов, настроим интеграцию с учетными и складскими системами.
-            </p>
-          </article>
-
-          <article class="card reveal from-left">
-            <h3 class="text-xl font-semibold">Инструменты для бизнеса</h3>
-            <p class="mt-2 text-slate-600 text-sm">
-              Сделаем инструменты, которые упростят бизнес-процессы и сделают их более эффективными: трекеры задач, дэшборды, базы знаний и многое другое внутри интерфеса Telegram.
-            </p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== Products ===== -->
-    <section id="products" class="py-16 sm:py-24">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl sm:text-4xl font-bold reveal from-left">Продукты</h2>
-
-        <div class="mt-10 grid md:grid-cols-2 gap-6">
-          <article class="card reveal from-left">
-            <h3 class="text-xl font-semibold">Telegram Task Tracker</h3>
-            <p class="mt-2 text-slate-600 text-sm">
-              Таск-трекер для постановки, отслеживания и напоминаний о задачах прямо в Telegram. Подходит для рабочих групп и проектных команд, а также для взаимодействия со сторонними подрядчиками и заказчиками
-            </p>
-            <ul class="mt-3 text-sm text-slate-700 list-disc list-inside">
-              <li>Создание и назначение задач прямо из чатов</li>
-              <li>Напоминания о сроках и статусах в Telegram</li>
-              <li>Фильтры и поиск по задачам</li>
-            </ul>
-          </article>
-
-          <article class="card reveal from-left">
-            <h3 class="text-xl font-semibold">Telegram Store</h3>
-            <p class="mt-2 text-slate-600 text-sm">
-              Магазин-витрина для продажи товаров и услуг в Telegram с оплатой внутри мессенджера и интеграцией с учётными системами.
-            </p>
-            <ul class="mt-3 text-sm text-slate-700 list-disc list-inside">
-              <li>Каталог, корзина и оформление заказа</li>
-              <li>Подключение оплаты любым платежным методом</li>
-              <li>Уведомления клиентам и менеджерам</li>
-              <li>Интеграция с внутренними системами компании</li>
-            </ul>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== Clients / For whom ===== -->
-    <section id="clients" class="py-16 sm:py-24 bg-gradient-to-b from-white to-sky-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl sm:text-4xl font-bold reveal from-left">Для кого подойдут решения</h2>
-
-        <div class="mt-8 grid md:grid-cols-3 gap-6">
-          <article class="card reveal from-left">
-            <h3 class="font-semibold">Розничные и онлайн-магазины</h3>
-            <p class="mt-2 text-sm text-slate-600">Автоматизация заказов, оплат и уведомлений, управление товарами и логистикой.</p>
-          </article>
-
-          <article class="card reveal from-left">
-            <h3 class="font-semibold">Сервисные компании и агентства</h3>
-            <p class="mt-2 text-sm text-slate-600">Коммуникация с клиентами, автоматизация заявок и контроль задач в Telegram.</p>
-          </article>
-
-          <article class="card reveal from-left">
-            <h3 class="font-semibold">Онлайн-школы и эксперты</h3>
-            <p class="mt-2 text-sm text-slate-600">Продажа услуг и подписок с оплатой в мессенджере, учёт заявок и уведомления.</p>
-          </article>
-
-          <article class="card reveal from-left">
-            <h3 class="font-semibold">Команды и стартапы</h3>
-            <p class="mt-2 text-sm text-slate-600">Управление задачами, статусы и отчётность — Telegram как единая точка управления.</p>
-          </article>
-
-          <article class="card reveal from-left">
-            <h3 class="font-semibold">Внутренние отделы компаний</h3>
-            <p class="mt-2 text-sm text-slate-600">HR, логистика, поддержка — автоматизация внутренних процессов и обмена данными.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== Stages ===== -->
-    <section id="stages" class="py-16 sm:py-24">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl sm:text-4xl font-bold reveal from-left">Этапы работы</h2>
-
-        <ol class="mt-8 grid lg:grid-cols-3 gap-6">
-          <li class="card reveal from-left">
-            <h3 class="font-semibold">Анализ</h3>
-            <p class="mt-1 text-sm text-slate-600">Интервью, цели, аудит текущих процессов.</p>
-          </li>
-          <li class="card reveal from-left">
-            <h3 class="font-semibold">Проектирование</h3>
-            <p class="mt-1 text-sm text-slate-600">Сценарии, прототипы, архитектура и ТЗ.</p>
-          </li>
-          <li class="card reveal from-left">
-            <h3 class="font-semibold">Реализация</h3>
-            <p class="mt-1 text-sm text-slate-600">Разработка и интеграции.</p>
-          </li>
-          <li class="card reveal from-left">
-            <h3 class="font-semibold">Настройка</h3>
-            <p class="mt-1 text-sm text-slate-600">Развёртывание, доступы, роли, мониторинг.</p>
-          </li>
-          <li class="card reveal from-left">
-            <h3 class="font-semibold">Тестирование</h3>
-            <p class="mt-1 text-sm text-slate-600">Приёмочные сценарии и нагрузочные проверки.</p>
-          </li>
-          <li class="card reveal from-left">
-            <h3 class="font-semibold">Обучение и поддержка</h3>
-            <p class="mt-1 text-sm text-slate-600">Обучаем команду и сопровождаем релиз.</p>
-          </li>
-        </ol>
-      </div>
-    </section>
-
-    <!-- ===== Pricing ===== -->
-    <section id="pricing" class="py-16 sm:py-24 bg-gradient-to-b from-white to-sky-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl sm:text-4xl font-bold reveal from-left">Стоимость</h2>
-        <p class="mt-3 text-slate-600 reveal from-left">
-          Итоговая цена зависит от сложности проекта и набора интеграций
+  <!-- ===== Hero ===== -->
+  <section id="home" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
+    <div class="grid lg:grid-cols-2 gap-10 items-center">
+      <div class="reveal from-left">
+        <span class="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs text-sky-700">Решения под задачи вашего бизнеса</span>
+        <h1 class="mt-4 text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+          Телеграм‑боты и мини‑приложения под ключ
+        </h1>
+        <p class="mt-6 text-lg text-slate-600 max-w-2xl">
+          «Минисофт» создаёт чат‑ботов, мини‑приложения и внутренние инструменты для бизнеса прямо в Telegram. Автоматизируем продажи и поддержку, ускоряем коммуникации, наводим порядок в задачах — от идеи до запуска и поддержки.
         </p>
+        <div class="mt-8 flex flex-col sm:flex-row gap-3">
+          <a href="#pricing" class="inline-flex items-center justify-center rounded-xl bg-sky-600 text-white px-5 py-3 shadow-sm hover:bg-sky-700">Узнать стоимость</a>
+          <a href="#services" class="inline-flex items-center justify-center rounded-xl border border-sky-200 px-5 py-3 hover:shadow">Наши услуги</a>
+        </div>
+        <ul class="mt-8 grid grid-cols-2 gap-4 max-w-md">
+          <li class="card flex items-center gap-3 reveal from-left">
+            <span class="text-2xl">🛡️</span>
+            <span class="text-sm">Гарантия результата и поддержка</span>
+          </li>
+          <li class="card flex items-center gap-3 reveal from-left">
+            <span class="text-2xl">⚡</span>
+            <span class="text-sm">Быстрая интеграция с вашими системами</span>
+          </li>
+        </ul>
+      </div>
 
-        <div class="mt-10 grid md:grid-cols-2 gap-6">
-          <div class="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm reveal from-left">
-            <div class="flex items-start justify-between">
-              <h3 class="text-xl font-semibold">Тариф</h3>
-              <p class="text-xl font-bold text-slate-900">От 50&nbsp;000&nbsp;₽</p>
-            </div>
-            <p class="mt-3 text-slate-600 text-sm leading-relaxed">
-              Базовая стоимость стартует от 50 000 рублей. Окончательная цена формируется после анализа требований, количества ролей, интеграций и сроков.
-            </p>
-            <ul class="mt-4 space-y-1 text-slate-700 text-sm list-disc list-inside">
-              <li>Прозрачные этапы и фиксированные спринты</li>
-              <li>Поддержка после релиза</li>
-              <li>Возможность поэтапного внедрения</li>
-            </ul>
-
-            <a href="#contact" class="mt-5 inline-flex items-center rounded-xl bg-sky-600 text-white px-4 py-2 text-sm font-medium hover:bg-sky-700 duration-150">
-              Получить расчёт
-            </a>
-          </div>
-
-          <div class="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm reveal from-left">
-            <h3 class="text-xl font-semibold">Что влияет на стоимость</h3>
-            <ul class="mt-4 space-y-2 text-slate-700 text-sm list-disc list-inside">
-              <li>Объём функционала и сценариев</li>
-              <li>Интеграции и обмен данными</li>
-              <li>Безопасность, роли и права</li>
-              <li>Сроки и нагрузка</li>
-            </ul>
+      <div class="relative">
+        <div class="absolute -inset-6 bg-sky-100/60 blur-3xl rounded-full"></div>
+        <div class="relative rounded-2xl border border-sky-100 bg-white shadow-xl p-6">
+          <div class="grid grid-cols-2 gap-4 text-center">
+            <div><div class="text-2xl font-bold">50+</div><p class="text-sm text-slate-500">реализованных проектов</p></div>
+            <div><div class="text-2xl font-bold">2–8 нед</div><p class="text-sm text-slate-500">сроки MVP</p></div>
+            <div><div class="text-2xl font-bold">99,9%</div><p class="text-sm text-slate-500">аптайм</p></div>
+            <div><div class="text-2xl font-bold">24/7</div><p class="text-sm text-slate-500">мониторинг</p></div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- ===== Contacts (с popup успеха) ===== -->
-    <section id="contact" class="py-16 sm:py-24 bg-gradient-to-b from-sky-50 to-white relative">
-      <!-- Успешная отправка: модальное окно -->
-      <div id="success-popup" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-        <div class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-sm mx-auto">
-          <div class="text-5xl mb-4">✅</div>
-          <h3 class="text-xl font-semibold mb-2">Заявка успешно отправлена!</h3>
-          <p class="text-slate-600 text-sm mb-4">
-            Мы получили вашу заявку и свяжемся с вами в ближайшее время.
+  <!-- ===== Services ===== -->
+  <section id="services" class="py-16 sm:py-24 bg-gradient-to-b from-white to-sky-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl sm:text-4xl font-bold reveal from-left">Услуги</h2>
+
+      <div class="mt-10 grid md:grid-cols-3 gap-6">
+        <article class="card reveal from-left">
+          <h3 class="text-xl font-semibold">Разработка чат‑ботов</h3>
+          <p class="mt-2 text-slate-600 text-sm">
+            Создаём чат‑ботов для продаж, поддержки и HR‑коммуникаций. Проработаем сценарии, UX и функционал под ваши цели, подключим оплату и интеграции.
           </p>
-          <button id="close-popup" class="mt-2 rounded-xl bg-sky-600 text-white px-4 py-2 text-sm font-medium hover:bg-sky-700 duration-150">
-            Хорошо
-          </button>
-        </div>
+        </article>
+
+        <article class="card reveal from-left">
+          <h3 class="text-xl font-semibold">Мини‑приложения в Telegram</h3>
+          <p class="mt-2 text-slate-600 text-sm">
+            Разработаем полноценные мобильные приложения внутри мессенджера — без установок и обновлений. Быстрый доступ пользователям, высокая вовлечённость.
+          </p>
+        </article>
+
+        <article class="card reveal from-left">
+          <h3 class="text-xl font-semibold">Интеграции со сторонним ПО</h3>
+          <p class="mt-2 text-slate-600 text-sm">
+            Настроим обмен данными с CRM, ERP, платёжными шлюзами, складскими и аналитическими системами, чтобы всё работало прямо в Telegram.
+          </p>
+        </article>
+
+        <article class="card reveal from-left">
+          <h3 class="text-xl font-semibold">Магазины в Telegram</h3>
+          <p class="mt-2 text-slate-600 text-sm">
+            Запустим полноценный канал продаж в мессенджере: каталог, корзина, оформление и оплата заказов. Настроим интеграции с учётными и складскими системами.
+          </p>
+        </article>
+
+        <article class="card reveal from-left">
+          <h3 class="text-xl font-semibold">Инструменты для бизнеса</h3>
+          <p class="mt-2 text-slate-600 text-sm">
+            Делаем инструменты, которые ускоряют процессы: трекеры задач, дашборды, базы знаний, боты‑ассистенты. Всё — внутри интерфейса Telegram.
+          </p>
+        </article>
       </div>
+    </div>
+  </section>
 
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-10 items-start">
-        <div class="reveal from-left">
-          <h2 class="text-3xl sm:text-4xl font-bold">Контакты</h2>
-          <p class="mt-3 text-slate-600">
-            Расскажите о задаче — предложим решение и оценку сроков
+  <!-- ===== Products ===== -->
+  <section id="products" class="py-16 sm:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl sm:text-4xl font-bold reveal from-left">Продукты</h2>
+
+      <div class="mt-10 grid md:grid-cols-2 gap-6">
+        <article class="card reveal from-left">
+          <h3 class="text-xl font-semibold">Telegram Task Tracker</h3>
+          <p class="mt-2 text-slate-600 text-sm">
+            Трекер для постановки, приоритизации и контроля задач прямо в Telegram. Подходит рабочим группам, проектным командам и внешним подрядчикам.
           </p>
-          <ul class="mt-6 space-y-2 text-slate-700 text-sm">
-            <li><strong>Телефон:</strong> <a href="tel:+79819584828" class="text-sky-700 hover:underline">8 981 958 48 28</a></li>
-            <li><strong>Email:</strong> <a href="mailto:info.softmini@gmail.com" class="text-sky-700 hover:underline">info.softmini@gmail.com</a></li>
-            <li><strong>Telegram:</strong> <a href="https://t.me/minisoft" class="text-sky-700 hover:underline">@minisoft</a></li>
+          <ul class="mt-3 text-sm text-slate-700 list-disc list-inside">
+            <li>Создание и назначение задач из чатов</li>
+            <li>Напоминания о сроках и статусах в Telegram</li>
+            <li>Фильтры, поиск и быстрые отчёты</li>
+          </ul>
+        </article>
+
+        <article class="card reveal from-left">
+          <h3 class="text-xl font-semibold">Telegram Store</h3>
+          <p class="mt-2 text-slate-600 text-sm">
+            Магазин для продажи товаров и услуг в Telegram с оплатой внутри мессенджера и интеграцией с учётными системами.
+          </p>
+          <ul class="mt-3 text-sm text-slate-700 list-disc list-inside">
+            <li>Каталог, корзина и оформление заказа</li>
+            <li>Подключение оплаты любыми методами</li>
+            <li>Уведомления клиентам и менеджерам</li>
+            <li>Интеграции с внутренними системами компании</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Clients / For whom ===== -->
+  <section id="clients" class="py-16 sm:py-24 bg-gradient-to-b from-white to-sky-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl sm:text-4xl font-bold reveal from-left">Для кого подойдут решения</h2>
+
+      <div class="mt-8 grid md:grid-cols-3 gap-6">
+        <article class="card reveal from-left">
+          <h3 class="font-semibold">Розничные и онлайн‑магазины</h3>
+          <p class="mt-2 text-sm text-slate-600">Автоматизация заказов, оплат и уведомлений, управление ассортиментом и логистикой.</p>
+        </article>
+        <article class="card reveal from-left">
+          <h3 class="font-semibold">Сервисные компании и агентства</h3>
+          <p class="mt-2 text-sm text-slate-600">Коммуникация с клиентами, автоматизация заявок, контроль задач и SLA в Telegram.</p>
+        </article>
+        <article class="card reveal from-left">
+          <h3 class="font-semibold">Онлайн‑школы и эксперты</h3>
+          <p class="mt-2 text-sm text-slate-600">Продажа услуг и подписок с оплатой в мессенджере, учёт заявок и персональные уведомления.</p>
+        </article>
+        <article class="card reveal from-left">
+          <h3 class="font-semibold">Команды и стартапы</h3>
+          <p class="mt-2 text-sm text-slate-600">Управление задачами, статусы и отчётность — Telegram как единая точка управления.</p>
+        </article>
+        <article class="card reveal from-left">
+          <h3 class="font-semibold">Внутренние отделы компаний</h3>
+          <p class="mt-2 text-sm text-slate-600">HR, логистика, поддержка — автоматизация внутренних процессов и обмена данными.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Stages ===== -->
+  <section id="stages" class="py-16 sm:py-24">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<h2 class="text-3xl sm:text-4xl font-bold reveal from-left">Этапы работы</h2>
+<ol class="mt-8 grid lg:grid-cols-3 gap-6 counter-reset stage">
+<li class="card reveal from-left relative pl-10 before:content-[counter(stage)] before:counter-increment-stage before:absolute before:left-4 before:top-5 before:w-6 before:h-6 before:rounded-full before:bg-sky-500 before:text-white before:flex before:items-center before:justify-center before:text-xs">
+<h3 class="font-semibold">1. Анализ</h3>
+<p class="mt-1 text-sm text-slate-600">Интервью, цели, аудит текущих процессов и систем.</p>
+</li>
+<li class="card reveal from-left relative pl-10 before:content-[counter(stage)] before:counter-increment-stage before:absolute before:left-4 before:top-5 before:w-6 before:h-6 before:rounded-full before:bg-sky-500 before:text-white before:flex before:items-center before:justify-center before:text-xs">
+<h3 class="font-semibold">2. Проектирование</h3>
+<p class="mt-1 text-sm text-slate-600">Сценарии, прототипы, архитектура, ТЗ и план спринтов.</p>
+</li>
+<li class="card reveal from-left relative pl-10 before:content-[counter(stage)] before:counter-increment-stage before:absolute before:left-4 before:top-5 before:w-6 before:h-6 before:rounded-full before:bg-sky-500 before:text-white before:flex before:items-center before:justify-center before:text-xs">
+<h3 class="font-semibold">3. Реализация</h3>
+<p class="mt-1 text-sm text-slate-600">Разработка, интеграции и настройка окружений.</p>
+</li>
+<li class="card reveal from-left relative pl-10 before:content-[counter(stage)] before:counter-increment-stage before:absolute before:left-4 before:top-5 before:w-6 before:h-6 before:rounded-full before:bg-sky-500 before:text-white before:flex before:items-center before:justify-center before:text-xs">
+<h3 class="font-semibold">4. Настройка</h3>
+<p class="mt-1 text-sm text-slate-600">Развёртывание, доступы, роли, мониторинг и алёрты.</p>
+</li>
+<li class="card reveal from-left relative pl-10 before:content-[counter(stage)] before:counter-increment-stage before:absolute before:left-4 before:top-5 before:w-6 before:h-6 before:rounded-full before:bg-sky-500 before:text-white before:flex before:items-center before:justify-center before:text-xs">
+<h3 class="font-semibold">5. Тестирование</h3>
+<p class="mt-1 text-sm text-slate-600">Приёмочные сценарии, нагрузочные проверки и фиксы.</p>
+</li>
+<li class="card reveal from-left relative pl-10 before:content-[counter(stage)] before:counter-increment-stage before:absolute before:left-4 before:top-5 before:w-6 before:h-6 before:rounded-full before:bg-sky-500 before:text-white before:flex before:items-center before:justify-center before:text-xs">
+<h3 class="font-semibold">6. Обучение и поддержка</h3>
+<p class="mt-1 text-sm text-slate-600">Обучаем команду, сопровождаем релиз и развиваем продукт.</p>
+</li>
+</ol>
+</div>
+</section>
+
+  <!-- ===== Pricing ===== -->
+  <section id="pricing" class="py-16 sm:py-24 bg-gradient-to-b from-white to-sky-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl sm:text-4xl font-bold reveal from-left">Стоимость</h2>
+      <p class="mt-3 text-slate-600 reveal from-left">
+        Итоговая цена зависит от объёма функционала, количества интеграций и сроков. После короткого интервью подготовим точную смету и план работ.
+      </p>
+
+      <div class="mt-10 grid md:grid-cols-2 gap-6">
+        <div class="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm reveal from-left">
+          <div class="flex items-start justify-between">
+            <h3 class="text-xl font-semibold">Тариф</h3>
+            <p class="text-xl font-bold text-slate-900">от 50&nbsp;000&nbsp;₽</p>
+          </div>
+          <p class="mt-3 text-slate-600 text-sm leading-relaxed">
+            Базовая стоимость — от 50&nbsp;000 рублей. Итоговый бюджет формируется после анализа требований, ролей, интеграций и ожидаемой нагрузки.
+          </p>
+          <ul class="mt-4 space-y-1 text-slate-700 text-sm list-disc list-inside">
+            <li>Прозрачные этапы и фиксированные спринты</li>
+            <li>Гарантия и поддержка после релиза</li>
+            <li>Поэтапное внедрение и масштабирование</li>
+          </ul>
+          <a href="#contact" class="mt-5 inline-flex items-center rounded-xl bg-sky-600 text-white px-4 py-2 text-sm font-medium hover:bg-sky-700 duration-150">
+            Получить расчёт
+          </a>
+        </div>
+
+        <div class="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm reveal from-left">
+          <h3 class="text-xl font-semibold">Что влияет на стоимость</h3>
+          <ul class="mt-4 space-y-2 text-slate-700 text-sm list-disc list-inside">
+            <li>Объём функционала и сложность сценариев</li>
+            <li>Интеграции и обмен данными</li>
+            <li>Требования к безопасности, ролям и правам</li>
+            <li>Сроки, нагрузка и SLA</li>
           </ul>
         </div>
-
-        <form id="contact-form" class="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm space-y-5 reveal from-left">
-          <div>
-            <label for="f-name" class="text-sm text-slate-600">Имя</label>
-            <input id="f-name" class="input mt-1" placeholder="Как к вам обращаться" required />
-          </div>
-
-          <div>
-            <label for="f-email" class="text-sm text-slate-600">Email</label>
-            <input id="f-email" type="email" class="input mt-1" placeholder="name@company.com" required />
-          </div>
-
-          <div>
-            <label for="f-tg" class="text-sm text-slate-600">Телеграм @username</label>
-            <input id="f-tg" class="input mt-1" placeholder="@username" />
-          </div>
-
-          <div>
-            <label for="f-msg" class="text-sm text-slate-600">Кратко опишите проект</label>
-            <textarea id="f-msg" rows="5" class="input mt-1" placeholder="Какая цель, интеграции, сроки?" required></textarea>
-          </div>
-
-          <button type="submit" class="w-full rounded-xl bg-sky-600 text-white px-4 py-3 text-sm font-medium hover:bg-sky-700 duration-150">
-            Отправить заявку
-          </button>
-
-          <p id="form-status" class="text-sm text-center text-slate-600 h-5"></p>
-
-          <p class="text-[12px] text-slate-500">
-            Нажимая кнопку, вы соглашаетесь с обработкой персональных данных.
-          </p>
-        </form>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- ===== Requisites ===== -->
-    <section id="legal" class="py-16 sm:py-24 bg-gradient-to-b from-white to-sky-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl sm:text-4xl font-bold reveal from-left">Реквизиты</h2>
-        <div class="mt-8 grid lg:grid-cols-2 gap-6">
-          <div class="card text-sm leading-6 reveal from-left">
-            <p><strong>Название организации:</strong><br/>ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ &quot;МИНИСОФТ&quot;</p>
-            <p class="mt-3"><strong>Юридический адрес:</strong><br/>197349, РОССИЯ, Г.САНКТ-ПЕТЕРБУРГ, ВН.ТЕР.Г. МУНИЦИПАЛЬНЫЙ ОКРУГ ЮНТОЛОВО, УЛ ПАРАШЮТНАЯ, Д. 23, К. 2, ЛИТЕРА А, КВ. 52</p>
-            <p class="mt-3">ИНН: 7814856690<br/>КПП: 781401001<br/>ОГРН: 1257800093187</p>
-          </div>
+  <!-- ===== Contacts (с popup успеха) ===== -->
+  <section id="contact" class="py-16 sm:py-24 bg-gradient-to-b from-sky-50 to-white relative">
+    <!-- Успешная отправка: модальное окно -->
+    <div id="success-popup" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+      <div class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-sm mx-auto">
+        <div class="text-5xl mb-4">✅</div>
+        <h3 class="text-xl font-semibold mb-2">Заявка успешно отправлена!</h3>
+        <p class="text-slate-600 text-sm mb-4">Мы получили вашу заявку и свяжемся с вами в ближайшее время.</p>
+        <button id="close-popup" class="mt-2 rounded-xl bg-sky-600 text-white px-4 py-2 text-sm font-medium hover:bg-sky-700 duration-150">Хорошо</button>
+      </div>
+    </div>
 
-          <div class="card text-sm leading-6 reveal from-left">
-            <p><strong>Расчётный счёт:</strong> 40702810010001989394</p>
-            <p>Банк: АО «ТБанк»</p>
-            <p>ИНН банка: 7710140679</p>
-            <p>БИК: 044525974</p>
-            <p>Корреспондентский счёт: 30101810145250000974</p>
-            <p class="mt-3"><strong>Юридический адрес банка:</strong><br/>127287, г. Москва, ул. Хуторская 2-я, д. 38А, стр. 26</p>
-          </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-10 items-start">
+      <div class="reveal from-left">
+        <h2 class="text-3xl sm:text-4xl font-bold">Контакты</h2>
+        <p class="mt-3 text-slate-600">Кратко опишите задачу — предложим решение, бюджет и сроки.</p>
+        <ul class="mt-6 space-y-2 text-slate-700 text-sm">
+          <li><strong>Телефон:</strong> <a href="tel:+79819584828" class="text-sky-700 hover:underline">8 981 958 48 28</a></li>
+          <li><strong>Email:</strong> <a href="mailto:info.softmini@gmail.com" class="text-sky-700 hover:underline">info.softmini@gmail.com</a></li>
+          <li><strong>Telegram:</strong> <a href="https://t.me/minisoft" class="text-sky-700 hover:underline">@minisoft</a></li>
+        </ul>
+      </div>
+
+      <form id="contact-form" class="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm space-y-5 reveal from-left">
+        <div>
+          <label for="f-name" class="text-sm text-slate-600">Имя</label>
+          <input id="f-name" class="input mt-1" placeholder="Как к вам обращаться" required />
+        </div>
+        <div>
+          <label for="f-email" class="text-sm text-slate-600">Email</label>
+          <input id="f-email" type="email" class="input mt-1" placeholder="name@company.com" required />
+        </div>
+        <div>
+          <label for="f-tg" class="text-sm text-slate-600">Телеграм @username</label>
+          <input id="f-tg" class="input mt-1" placeholder="@username" />
+        </div>
+        <div>
+          <label for="f-msg" class="text-sm text-slate-600">Кратко опишите проект</label>
+          <textarea id="f-msg" rows="5" class="input mt-1" placeholder="Цель, нужные интеграции, сроки" required></textarea>
+        </div>
+        <button type="submit" class="w-full rounded-xl bg-sky-600 text-white px-4 py-3 text-sm font-medium hover:bg-sky-700 duration-150">Отправить заявку</button>
+        <p id="form-status" class="text-sm text-center text-slate-600 h-5"></p>
+        <p class="text-[12px] text-slate-500">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===== Requisites ===== -->
+  <section id="legal" class="py-16 sm:py-24 bg-gradient-to-b from-white to-sky-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl sm:text-4xl font-bold reveal from-left">Реквизиты</h2>
+
+      <div class="mt-8 grid lg:grid-cols-2 gap-6">
+        <div class="card text-sm leading-6 reveal from-left">
+          <p><strong>Название организации:</strong><br/>ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ &quot;МИНИСОФТ&quot;</p>
+          <p class="mt-3"><strong>Юридический адрес:</strong><br/>197349, РОССИЯ, Г. САНКТ‑ПЕТЕРБУРГ, ВН. ТЕР. Г. МУНИЦИПАЛЬНЫЙ ОКРУГ ЮНТОЛОВО, УЛ. ПАРАШЮТНАЯ, Д. 23, К. 2, ЛИТЕРА А, КВ. 52</p>
+          <p class="mt-3">ИНН: 7814856690<br/>КПП: 781401001<br/>ОГРН: 1257800093187</p>
+        </div>
+        <div class="card text-sm leading-6 reveal from-left">
+          <p><strong>Расчётный счёт:</strong> 40702810010001989394</p>
+          <p>Банк: АО «ТБанк»</p>
+          <p>ИНН банка: 7710140679</p>
+          <p>БИК: 044525974</p>
+          <p>Корреспондентский счёт: 30101810145250000974</p>
+          <p class="mt-3"><strong>Юридический адрес банка:</strong><br/>127287, г. Москва, ул. Хуторская 2‑я, д. 38А, стр. 26</p>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- ===== Footer ===== -->
-    <footer class="border-t border-sky-100 bg-white">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid md:grid-cols-3 gap-8">
-        <div class="md:col-span-2 text-sm text-slate-600 space-y-3 reveal from-left">
-          <p>© <span id="year"></span> Минисофт. Все права защищены.</p>
-          <p>
-            Информация, размещённая на сайте не является публичной офертой (ст. 437 ГК РФ). Актуальные цены и условия уточняйте по телефону.
-          </p>
-          <p>Продолжая использовать сайт, вы соглашаетесь на использование cookies.</p>
-        </div>
-
-        <div class="reveal from-left">
-          <h4 class="font-semibold">Навигация</h4>
-          <ul class="mt-3 space-y-2 text-sm">
-            <li><a href="#services" class="hover:text-sky-700">Услуги</a></li>
-            <li><a href="#products" class="hover:text-sky-700">Продукты</a></li>
-            <li><a href="#clients" class="hover:text-sky-700">Клиенты</a></li>
-            <li><a href="#stages" class="hover:text-sky-700">Этапы</a></li>
-            <li><a href="#pricing" class="hover:text-sky-700">Стоимость</a></li>
-            <li><a href="#contact" class="hover:text-sky-700">Контакты</a></li>
-          </ul>
-        </div>
+  <!-- ===== Footer ===== -->
+  <footer class="border-t border-sky-100 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid md:grid-cols-3 gap-8">
+      <div class="md:col-span-2 text-sm text-slate-600 space-y-3 reveal from-left">
+        <p>© <span id="year"></span> Минисофт. Все права защищены.</p>
+        <p>Информация, размещённая на сайте, не является публичной офертой (ст. 437 ГК РФ). Актуальные цены и условия уточняйте по телефону.</p>
+        <p>Продолжая использовать сайт, вы соглашаетесь на использование cookies.</p>
       </div>
-    </footer>
+      <div class="reveal from-left">
+        <h4 class="font-semibold">Навигация</h4>
+        <ul class="mt-3 space-y-2 text-sm">
+          <li><a href="#services" class="hover:text-sky-700">Услуги</a></li>
+          <li><a href="#products" class="hover:text-sky-700">Продукты</a></li>
+          <li><a href="#clients" class="hover:text-sky-700">Клиенты</a></li>
+          <li><a href="#stages" class="hover:text-sky-700">Этапы</a></li>
+          <li><a href="#pricing" class="hover:text-sky-700">Стоимость</a></li>
+          <li><a href="#contact" class="hover:text-sky-700">Контакты</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
 
-    <!-- ===== Встроенные скрипты (заменяют script.js) ===== -->
-    <script>
-      // ССЫЛКИ НА ЭЛЕМЕНТЫ
-      const header = document.querySelector("header");
-      const burger = document.getElementById("burger");
-      const menu = document.getElementById("menu");
-      const yearEl = document.getElementById("year");
+  <!-- ===== Встроенные скрипты (заменяют script.js) ===== -->
+  <script>
+    // ССЫЛКИ НА ЭЛЕМЕНТЫ
+    const header = document.querySelector("header");
+    const burger = document.getElementById("burger");
+    const menu = document.getElementById("menu");
+    const yearEl = document.getElementById("year");
 
-      // ДИНАМИЧЕСКИЙ ГОД
-      if (yearEl) yearEl.textContent = new Date().getFullYear();
+    // ДИНАМИЧЕСКИЙ ГОД
+    if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-      // ТЕНЬ У ШАПКИ
-      const onScrollHeaderShadow = () => {
-        if (window.scrollY > 4) header?.classList.add("header--shadow");
-        else header?.classList.remove("header--shadow");
-      };
-      onScrollHeaderShadow();
-      window.addEventListener("scroll", onScrollHeaderShadow, { passive: true });
+    // ТЕНЬ У ШАПКИ
+    const onScrollHeaderShadow = () => {
+      if (window.scrollY > 4) header?.classList.add("header--shadow");
+      else header?.classList.remove("header--shadow");
+    };
+    onScrollHeaderShadow();
+    window.addEventListener("scroll", onScrollHeaderShadow, { passive: true });
 
-      // БУРГЕР-МЕНЮ
-      const toggleMenu = () => {
-        menu?.classList.toggle("hidden");
-        document.body.classList.toggle("no-scroll");
-        if (burger) burger.textContent = menu?.classList.contains("hidden") ? "☰" : "✕";
-      };
-      burger?.addEventListener("click", toggleMenu);
+    // БУРГЕР-МЕНЮ
+    const toggleMenu = () => {
+      menu?.classList.toggle("hidden");
+      document.body.classList.toggle("no-scroll");
+      if (burger) burger.textContent = menu?.classList.contains("hidden") ? "☰" : "✕";
+    };
+    burger?.addEventListener("click", toggleMenu);
 
-      // Закрытие меню по клику на пункт (мобайл)
-      menu?.querySelectorAll('a[href^="#"]').forEach((a) => {
-        a.addEventListener("click", () => {
-          if (window.innerWidth < 768 && !menu.classList.contains("hidden")) toggleMenu();
-        });
+    // Закрытие меню по клику на пункт (мобайл)
+    menu?.querySelectorAll('a[href^="#"]').forEach((a) => {
+      a.addEventListener("click", () => {
+        if (window.innerWidth < 768 && !menu.classList.contains("hidden")) toggleMenu();
       });
+    });
 
-      // ПЛАВНЫЙ СКРОЛЛ С КОМПЕНСАЦИЕЙ ХЕДЕРА
-      const HEADER_OFFSET = 72;
-      document.querySelectorAll('a[href^="#"]').forEach((a) => {
-        a.addEventListener("click", (e) => {
-          const id = a.getAttribute("href");
-          if (!id || id === "#" || id.length < 2) return;
-          const target = document.querySelector(id);
-          if (!target) return;
-          e.preventDefault();
-          const rect = target.getBoundingClientRect();
-          const top = window.scrollY + rect.top - HEADER_OFFSET;
-          window.scrollTo({ top, behavior: "smooth" });
-          history.pushState(null, "", id);
-        });
-      });
-
-      // REVEAL-Анимации (включая модификатор from-left)
-      const observer = new IntersectionObserver(
-        (entries) => entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target);
-          }
-        }),
-        { threshold: 0.15 }
-      );
-      document.querySelectorAll("section, .card, article, figure, .rounded-2xl, .reveal").forEach((el) => {
-        // добавим .reveal, если его нет (для заголовков секций и т.п.)
-        if (!el.classList.contains("reveal")) el.classList.add("reveal");
-        observer.observe(el);
-      });
-
-      // ===== Сообщение об успешной отправке заявки =====
-      const form = document.getElementById("contact-form");
-      const status = document.getElementById("form-status");
-      const popup = document.getElementById("success-popup");
-      const closePopup = document.getElementById("close-popup");
-
-      const showSuccessPopup = () => {
-        popup?.classList.remove("hidden");
-      };
-      const hideSuccessPopup = () => {
-        popup?.classList.add("hidden");
-      };
-
-      form?.addEventListener("submit", async (e) => {
+    // ПЛАВНЫЙ СКРОЛЛ С КОМПЕНСАЦИЕЙ ХЕДЕРА
+    const HEADER_OFFSET = 72;
+    document.querySelectorAll('a[href^="#"]').forEach((a) => {
+      a.addEventListener("click", (e) => {
+        const id = a.getAttribute("href");
+        if (!id || id === "#" || id.length < 2) return;
+        const target = document.querySelector(id);
+        if (!target) return;
         e.preventDefault();
-
-        // простая валидация
-        const name = document.getElementById("f-name")?.value?.trim();
-        const email = document.getElementById("f-email")?.value?.trim();
-        const message = document.getElementById("f-msg")?.value?.trim();
-        const emailOk = !!email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-        if (!name || !emailOk || !message) {
-          status.textContent = "Заполните имя, корректный email и описание проекта.";
-          status.className = "text-sm text-center msg msg--error h-5";
-          return;
-        }
-
-        status.textContent = "Отправляем заявку…";
-        status.className = "text-sm text-center msg h-5";
-
-        // Имитация отправки (вы можете заменить на свой эндпоинт)
-        await new Promise((r) => setTimeout(r, 800));
-
-        // Успех: показываем попап, сбрасываем форму
-        status.textContent = "✅ Заявка отправлена.";
-        status.className = "text-sm text-center msg msg--ok h-5";
-        showSuccessPopup();
-        form.reset();
+        const rect = target.getBoundingClientRect();
+        const top = window.scrollY + rect.top - HEADER_OFFSET;
+        window.scrollTo({ top, behavior: "smooth" });
+        history.pushState(null, "", id);
       });
+    });
 
-      closePopup?.addEventListener("click", hideSuccessPopup);
-      popup?.addEventListener("click", (e) => { if (e.target === popup) hideSuccessPopup(); });
-    </script>
-  </body>
+    // REVEAL-Анимации (включая модификатор from-left)
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      }),
+      { threshold: 0.15 }
+    );
+
+    document.querySelectorAll("section, .card, article, figure, .rounded-2xl, .reveal").forEach((el) => {
+      if (!el.classList.contains("reveal")) el.classList.add("reveal");
+      observer.observe(el);
+    });
+
+    // ===== Сообщение об успешной отправке заявки =====
+    const form = document.getElementById("contact-form");
+    const status = document.getElementById("form-status");
+    const popup = document.getElementById("success-popup");
+    const closePopup = document.getElementById("close-popup");
+
+    const showSuccessPopup = () => { popup?.classList.remove("hidden"); };
+    const hideSuccessPopup = () => { popup?.classList.add("hidden"); };
+
+    form?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      // простая валидация
+      const name = document.getElementById("f-name")?.value?.trim();
+      const email = document.getElementById("f-email")?.value?.trim();
+      const message = document.getElementById("f-msg")?.value?.trim();
+      const emailOk = !!email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+      if (!name || !emailOk || !message) {
+        status.textContent = "Заполните имя, корректный email и описание проекта.";
+        status.className = "text-sm text-center msg msg--error h-5";
+        return;
+      }
+
+      status.textContent = "Отправляем заявку…";
+      status.className = "text-sm text-center msg h-5";
+
+      // Имитация отправки (замените на свой эндпоинт)
+      await new Promise((r) => setTimeout(r, 800));
+
+      // Успех: показываем попап, сбрасываем форму
+      status.textContent = "✅ Заявка отправлена.";
+      status.className = "text-sm text-center msg msg--ok h-5";
+      showSuccessPopup();
+      form.reset();
+    });
+
+    closePopup?.addEventListener("click", hideSuccessPopup);
+    popup?.addEventListener("click", (e) => { if (e.target === popup) hideSuccessPopup(); });
+  </script>
+</body>
 </html>
+
