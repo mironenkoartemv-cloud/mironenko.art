@@ -1,88 +1,212 @@
-/* =========
-   БАЗА
-   ========= */
-:root{
-  --sky-50:#f0f9ff;
-  --sky-100:#e0f2fe;
-  --sky-200:#bae6fd;
-  --sky-300:#7dd3fc;
-  --sky-500:#0ea5e9;
-  --sky-600:#0284c7;
-  --slate-500:#64748b;
-  --slate-600:#475569;
-  --radius:16px;
+/* ========= БАЗОВЫЕ ПЕРЕМЕННЫЕ ========= */
+:root {
+  --sky-50: #f0f9ff;
+  --sky-100: #e0f2fe;
+  --sky-200: #bae6fd;
+  --sky-300: #7dd3fc;
+  --sky-500: #0ea5e9;
+  --sky-600: #0284c7;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --radius: 16px;
 }
 
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body.no-scroll { overflow: hidden; }
+* {
+  box-sizing: border-box;
+}
 
-/* =========
-   КАРТОЧКИ / ИНПУТЫ
-   ========= */
-.card{
-  border:1px solid var(--sky-100);
-  background:#fff;
+html {
+  scroll-behavior: smooth;
+}
+
+body.no-scroll {
+  overflow: hidden;
+}
+
+/* ========= ПРОГРЕСС-ЛИНИЯ ПРОКРУТКИ ========= */
+#scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 60;
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, var(--sky-300), var(--sky-600));
+}
+
+/* ========= КАРТОЧКИ И ИНПУТЫ ========= */
+.card {
+  border: 1px solid var(--sky-100);
+  background: #fff;
   border-radius: var(--radius);
   padding: 24px;
   box-shadow: 0 1px 2px rgba(2, 132, 199, 0.04);
-  transition: box-shadow .2s ease, transform .2s ease;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
-.card:hover{
+
+.card:hover {
   box-shadow: 0 8px 26px rgba(2, 132, 199, 0.12);
   transform: translateY(-2px);
 }
 
-.input{
+.input {
   width: 100%;
-  border:1px solid var(--sky-200);
-  background:#fff;
+  border: 1px solid var(--sky-200);
+  background: #fff;
   border-radius: 12px;
   padding: 10px 12px;
   outline: none;
-  transition: box-shadow .15s ease, border-color .15s ease;
-}
-.input:focus{
-  border-color: var(--sky-300);
-  box-shadow: 0 0 0 4px rgba(125, 211, 252, .35);
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
-/* Состояния подсказок */
-.msg{
+.input:focus {
+  border-color: var(--sky-300);
+  box-shadow: 0 0 0 4px rgba(125, 211, 252, 0.35);
+}
+
+/* ========= СТАТУСНЫЕ СООБЩЕНИЯ ========= */
+.msg {
   font-size: 12px;
   line-height: 1.4;
 }
-.msg--error{ color:#b91c1c; }     /* красный-700 */
-.msg--ok{ color:#0369a1; }        /* sky-800 */
 
-/* =========
-   ХЕДЕР — ТЕНЬ ПРИ СКРОЛЛЕ
-   ========= */
-.header--shadow{
-  box-shadow: 0 8px 26px rgba(2, 132, 199, 0.10);
+.msg--error {
+  color: #b91c1c;
 }
 
-/* =========
-   REVEAL-Анимация
-   ========= */
-.reveal{
+.msg--ok {
+  color: #0369a1;
+}
+
+/* ========= ТЕНЬ ДЛЯ ХЕДЕРА ========= */
+.header--shadow {
+  box-shadow: 0 8px 26px rgba(2, 132, 199, 0.1);
+}
+
+/* ========= АНИМАЦИЯ ПОЯВЛЕНИЯ (REVEAL) ========= */
+.reveal {
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity .6s ease, transform .6s ease;
-}
-.reveal.is-visible{
-  opacity: 1;
-  transform: translateY(0);
-}
-@media (prefers-reduced-motion: reduce){
-  .reveal{ opacity:1; transform:none; transition:none; }
+  filter: blur(4px);
+  transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease;
 }
 
-/* =========
-   FAQ (убираем стандартный маркер)
-   ========= */
-#faq-list summary{
-  list-style: none;
-  user-select: none;
+.reveal.is-visible {
+  opacity: 1;
+  transform: translate(0, 0);
+  filter: blur(0);
 }
-#faq-list summary::-webkit-details-marker{ display:none; }
+
+/* Направления */
+.reveal[data-reveal="up"] {
+  transform: translateY(28px);
+}
+
+.reveal[data-reveal="down"] {
+  transform: translateY(-28px);
+}
+
+.reveal[data-reveal="left"] {
+  transform: translateX(-28px);
+}
+
+.reveal[data-reveal="right"] {
+  transform: translateX(28px);
+}
+
+.reveal[data-reveal="scale"] {
+  transform: scale(0.96);
+}
+
+/* Каскадная задержка */
+.reveal[data-delay="1"] {
+  transition-delay: 0.06s;
+}
+.reveal[data-delay="2"] {
+  transition-delay: 0.12s;
+}
+.reveal[data-delay="3"] {
+  transition-delay: 0.18s;
+}
+.reveal[data-delay="4"] {
+  transition-delay: 0.24s;
+}
+
+/* ========= ПРЕДПОЧТЕНИЯ ПОЛЬЗОВАТЕЛЯ ========= */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+}
+
+/* ========= МИКРОАНИМАЦИИ ========= */
+.icon-bounce {
+  display: inline-block;
+  transform-origin: 50% 80%;
+}
+
+.icon-bounce:hover {
+  animation: pop 0.28s ease;
+}
+
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-ripple .ripple {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+  width: 8px;
+  height: 8px;
+  transform: translate(-50%, -50%) scale(1);
+  background: rgba(2, 132, 199, 0.18);
+  animation: ripple 0.6s ease;
+}
+
+/* ========= СОСТОЯНИЕ КНОПКИ ========= */
+.btn-ripple[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ========= ПАРАЛЛАКС ========= */
+.parallax-root {
+  position: relative;
+  isolation: isolate;
+}
+
+.parallax-item {
+  will-change: transform;
+  transition: transform 0.2s ease;
+}
+
+/* ========= АНИМАЦИИ ========= */
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  60% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes ripple {
+  from {
+    opacity: 0.35;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(18);
+  }
+}
