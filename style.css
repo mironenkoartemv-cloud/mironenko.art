@@ -84,3 +84,45 @@ body.no-scroll { overflow: hidden; }
    ========= */
 #faq-list summary{ list-style:none; user-select:none; }
 #faq-list summary::-webkit-details-marker{ display:none; }
+
+/* Сброс счётчика и стили для этапов */
+#stages ol {
+  counter-reset: stage;
+}
+
+#stages li {
+  position: relative;
+  padding-left: 3rem;
+}
+
+#stages li::before {
+  counter-increment: stage;
+  content: counter(stage);
+  position: absolute;
+  left: 1rem;
+  top: 1.5rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  background-color: var(--sky-500);
+  color: white;
+  border-radius: 9999px;
+}
+
+/* Для мобильных устройств уменьшаем цифры */
+@media (max-width: 640px) {
+  #stages li::before {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.875rem;
+    left: 0.75rem;
+  }
+  #stages li {
+    padding-left: 2.5rem;
+  }
+}
+
