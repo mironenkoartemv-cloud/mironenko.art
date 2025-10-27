@@ -553,45 +553,56 @@
       observer.observe(el);
     });
 
-    // ===== Сообщение об успешной отправке заявки =====
-    const form = document.getElementById("contact-form");
-    const status = document.getElementById("form-status");
-    const popup = document.getElementById("success-popup");
-    const closePopup = document.getElementById("close-popup");
+  // ===== Сообщение об успешной отправке заявки =====
+  const form = document.getElementById("contact-form");
+  const status = document.getElementById("form-status");
+  const popup = document.getElementById("success-popup");
+  const closePopup = document.getElementById("close-popup");
 
-    const showSuccessPopup = () => { popup?.classList.remove("hidden"); };
-    const hideSuccessPopup = () => { popup?.classList.add("hidden"); };
+  const showSuccessPopup = () => { popup?.classList.remove("hidden"); };
+  const hideSuccessPopup = () => { popup?.classList.add("hidden"); };
 
-    form?.addEventListener("submit", async (e) => {
-      e.preventDefault();
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      // простая валидация
-      const name = document.getElementById("f-name")?.value?.trim();
-      const email = document.getElementById("f-email")?.value?.trim();
-      const message = document.getElementById("f-msg")?.value?.trim();
-      const emailOk = !!email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const name = document.getElementById("f-name")?.value?.trim();
+    const email = document.getElementById("f-email")?.value?.trim();
+    const tg = document.getElementById("f-tg")?.value?.trim();
+    const message = document.getElementById("f-msg")?.value?.trim();
 
-      if (!name || !emailOk || !message) {
-        status.textContent = "Заполните имя, корректный email и описание проекта.";
-        status.className = "text-sm text-center msg msg--error h-5";
-        return;
-      }
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const TG_RE = /^@?[a-zA-Z][a-zA-Z0-9_]{4,31}$/; // 5–32 символов
 
-      status.textContent = "Отправляем заявку…";
-      status.className = "text-sm text-center msg h-5";
+    // helper для статуса
+    const setStatus = (text, type) => {
+      status.textContent = text || "";
+      const base = "text-sm text-center msg h-5";
+      status.className = base + (type === "error" ? " msg--error" : type === "ok" ? " msg--ok" : "");
+    };
 
-      // Имитация отправки (замените на свой эндпоинт)
-      await new Promise((r) => setTimeout(r, 800));
+    // Обязательные поля
+    if (!name) { setStatus("Укажите имя.", "error"); return; }
+    if (!email || !EMAIL_RE.test(email)) { setStatus("Указан неверный формат email.", "error"); return; }
+    if (!message) { setStatus("Опишите проект в поле сообщения.", "error"); return; }
 
-      // Успех: показываем попап, сбрасываем форму
-      status.textContent = "✅ Заявка отправлена.";
-      status.className = "text-sm text-center msg msg--ok h-5";
-      showSuccessPopup();
-      form.reset();
-    });
+    // Телеграм — опционально; если введён, проверяем формат
+    if (tg && !TG_RE.test(tg)) {
+      setStatus("Неверный формат Telegram @username (5–32 символов, латиница/цифры/_, @ опционально).", "error");
+      return;
+    }
 
-    closePopup?.addEventListener("click", hideSuccessPopup);
-    popup?.addEventListener("click", (e) => { if (e.target === popup) hideSuccessPopup(); });
+    // Имитация отправки
+    setStatus("Отправляем заявку…");
+    await new Promise((r) => setTimeout(r, 800));
+
+    setStatus("✅ Заявка отправлена.", "ok");
+    showSuccessPopup();
+    form.reset();
+  });
+
+  // Закрытие попапа
+  closePopup?.addEventListener("click", hideSuccessPopup);
+  popup?.addEventListener("click", (e) => { if (e.target === popup) hideSuccessPopup(); });
   </script>
 </body>
 </html>
