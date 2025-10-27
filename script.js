@@ -1,86 +1,112 @@
-/* =========
-   БАЗА
-   ========= */
-:root{
-  --sky-50:#f0f9ff;
-  --sky-100:#e0f2fe;
-  --sky-200:#bae6fd;
-  --sky-300:#7dd3fc;
-  --sky-500:#0ea5e9;
-  --sky-600:#0284c7;
-  --slate-500:#64748b;
-  --slate-600:#475569;
-  --radius:16px;
+// ===== ССЫЛКИ НА ЭЛЕМЕНТЫ
+const header = document.querySelector("header");
+const burger = document.getElementById("burger");
+const menu = document.getElementById("menu");
+const yearEl = document.getElementById("year");
+
+// Контактная форма / попап
+const form = document.getElementById("contact-form");
+const status = document.getElementById("form-status");
+const popup = document.getElementById("success-popup");
+const closePopup = document.getElementById("close-popup");
+
+// ===== ДИНАМИЧЕСКИЙ ГОД
+if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+// ===== ТЕНЬ У ШАПКИ
+const onScrollHeaderShadow = () => {
+  if (window.scrollY > 4) header?.classList.add("header--shadow");
+  else header?.classList.remove("header--shadow");
+};
+onScrollHeaderShadow();
+window.addEventListener("scroll", onScrollHeaderShadow, { passive: true });
+
+// ===== БУРГЕР-МЕНЮ
+const toggleMenu = () => {
+  menu?.classList.toggle("hidden");
+  document.body.classList.toggle("no-scroll");
+  if (burger) burger.textContent = menu?.classList.contains("hidden") ? "☰" : "✕";
+};
+burger?.addEventListener("click", toggleMenu);
+
+// Закрытие меню по клику на пункт
+menu?.querySelectorAll('a[href^="#"]').forEach((a) => {
+  a.addEventListener("click", () => {
+    if (window.innerWidth < 768 && !menu.classList.contains("hidden")) toggleMenu();
+  });
+});
+
+// ===== ПЛАВНЫЙ СКРОЛЛ С КОМПЕНСАЦИЕЙ ХЕДЕРА
+const HEADER_OFFSET = 72;
+document.querySelectorAll('a[href^="#"]').forEach((a) => {
+  a.addEventListener("click", (e) => {
+    const id = a.getAttribute("href");
+    if (!id || id === "#" || id.length < 2) return;
+    const target = document.querySelector(id);
+    if (!target) return;
+    e.preventDefault();
+    const rect = target.getBoundingClientRect();
+    const top = window.scrollY + rect.top - HEADER_OFFSET;
+    window.scrollTo({ top, behavior: "smooth" });
+    history.pushState(null, "", id);
+  });
+});
+
+// ===== REVEAL-Анимации (включая модификатор .from-left)
+const observer = new IntersectionObserver(
+  (entries) =>
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      }
+    }),
+  { threshold: 0.15 }
+);
+
+// Навесим .reveal, если не задан, и начнём наблюдение
+document
+  .querySelectorAll("section, .card, article, figure, .rounded-2xl, .reveal")
+  .forEach((el) => {
+    if (!el.classList.contains("reveal")) el.classList.add("reveal");
+    observer.observe(el);
+  });
+
+// ===== Помощники для статуса формы
+function setStatus(text, type = "info") {
+  if (!status) return;
+  status.textContent = text || "";
+  status.className = "text-sm text-center h-5 msg";
+  if (type === "ok") status.classList.add("msg--ok");
+  if (type === "error") status.classList.add("msg--error");
 }
 
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body.no-scroll { overflow: hidden; }
+// ===== ЛОГИКА ОТПРАВКИ ФОРМЫ + ПОПАП УСПЕХА
+form?.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-/* =========
-   КАРТОЧКИ / ИНПУТЫ / СООБЩЕНИЯ
-   ========= */
-.card{
-  border:1px solid var(--sky-100);
-  background:#fff;
-  border-radius: var(--radius);
-  padding: 24px;
-  box-shadow: 0 1px 2px rgba(2,132,199,.04);
-  transition: box-shadow .2s ease, transform .2s ease;
-}
-.card:hover{
-  box-shadow: 0 8px 26px rgba(2,132,199,.12);
-  transform: translateY(-2px);
-}
+  const name = document.getElementById("f-name")?.value?.trim();
+  const email = document.getElementById("f-email")?.value?.trim();
+  const message = document.getElementById("f-msg")?.value?.trim();
 
-.input{
-  width: 100%;
-  border:1px solid var(--sky-200);
-  background:#fff;
-  border-radius: 12px;
-  padding: 10px 12px;
-  outline: none;
-  transition: box-shadow .15s ease, border-color .15s ease;
-}
-.input:focus{
-  border-color: var(--sky-300);
-  box-shadow: 0 0 0 4px rgba(125,211,252,.35);
-}
+  const emailOk = !!email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if (!name || !emailOk || !message) {
+    setStatus("Заполните имя, корректный email и описание проекта.", "error");
+    return;
+  }
 
-.msg{ font-size:12px; line-height:1.4; }
-.msg--error{ color:#b91c1c; }
-.msg--ok{ color:#0369a1; }
+  setStatus("Отправляем заявку…");
 
-/* =========
-   ХЕДЕР — ТЕНЬ ПРИ СКРОЛЛЕ
-   ========= */
-.header--shadow{
-  box-shadow: 0 8px 26px rgba(2,132,199,.10);
-}
+  // Имитация запроса на сервер (замени при необходимости)
+  await new Promise((r) => setTimeout(r, 800));
 
-/* =========
-   REVEAL-Анимация
-   ========= */
-.reveal{
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity .6s ease, transform .6s ease;
-}
-.reveal.is-visible{
-  opacity: 1;
-  transform: translateY(0);
-}
-/* Модификатор «вплывание слева» */
-.reveal.from-left{ transform: translateX(-24px); }
-.reveal.from-left.is-visible{ transform: translateX(0); }
+  setStatus("✅ Заявка отправлена.", "ok");
+  popup?.classList.remove("hidden");
+  form.reset();
+});
 
-@media (prefers-reduced-motion: reduce){
-  .reveal{ opacity:1; transform:none; transition:none; }
-  .reveal.from-left{ transform:none; }
-}
-
-/* =========
-   FAQ (если есть)
-   ========= */
-#faq-list summary{ list-style:none; user-select:none; }
-#faq-list summary::-webkit-details-marker{ display:none; }
+// Закрытие попапа
+closePopup?.addEventListener("click", () => popup?.classList.add("hidden"));
+popup?.addEventListener("click", (e) => {
+  if (e.target === popup) popup?.classList.add("hidden");
+});
