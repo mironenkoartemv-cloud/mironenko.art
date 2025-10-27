@@ -81,23 +81,50 @@ function setStatus(text, type = "info") {
   if (type === "error") status.classList.add("msg--error");
 }
 
-// ===== ЛОГИКА ОТПРАВКИ ФОРМЫ + ПОПАП УСПЕХА
+// Статус + helper
+const status = document.getElementById("form-status");
+function setStatus(msg, type) {
+  status.textContent = msg || "";
+  const base = "text-sm text-center msg h-5";
+  if (type === "error") status.className = base + " msg--error";
+  else if (type === "ok") status.className = base + " msg--ok";
+  else status.className = base;
+}
+
 form?.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const name = document.getElementById("f-name")?.value?.trim();
   const email = document.getElementById("f-email")?.value?.trim();
+  const tg = document.getElementById("f-tg")?.value?.trim();
   const message = document.getElementById("f-msg")?.value?.trim();
 
-  const emailOk = !!email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  if (!name || !emailOk || !message) {
-    setStatus("Заполните имя, корректный email и описание проекта.", "error");
+  // Валидаторы
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // @ — опционально; первая буква латинская; длина 5–32; далее латиница/цифры/_
+  const TG_RE = /^@?[a-zA-Z][a-zA-Z0-9_]{4,31}$/;
+
+  // Обязательные поля
+  if (!name) {
+    setStatus("Укажите имя.", "error");
+    return;
+  }
+  if (!email || !EMAIL_RE.test(email)) {
+    setStatus("Указан неверный формат email.", "error");
+    return;
+  }
+  if (!message) {
+    setStatus("Опишите проект в поле сообщения.", "error");
+    return;
+  }
+  // Телеграм @username — опционально; если введён, проверяем формат
+  if (tg && !TG_RE.test(tg)) {
+    setStatus("Неверный формат Telegram @username (5–32 символа, латиница/цифры/_, @ опционально).", "error");
     return;
   }
 
+  // Имитация отправки
   setStatus("Отправляем заявку…");
-
-  // Имитация запроса на сервер (замени при необходимости)
   await new Promise((r) => setTimeout(r, 800));
 
   setStatus("✅ Заявка отправлена.", "ok");
